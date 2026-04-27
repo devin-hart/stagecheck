@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StageCheck</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<header>
+  <h1>StageCheck</h1>
+  <span>Staging page auditor</span>
+</header>
+
+<div class="container">
+  <div class="url-form">
+    <label>Staging URL to audit</label>
+    <div class="url-row">
+      <input type="url" id="urlInput" placeholder="https://staging.yoursite.com/page" />
+      <button id="runBtn" onclick="runAudit()">Run audit</button>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div id="results">
+    <div class="summary">
+      <div class="summary-card"><div class="num red" id="numErrors">0</div><div class="lbl">Errors</div></div>
+      <div class="summary-card"><div class="num amber" id="numWarnings">0</div><div class="lbl">Warnings</div></div>
+      <div class="summary-card"><div class="num green" id="numPassed">0</div><div class="lbl">Criteria passed</div></div>
+      <div class="summary-card"><div class="num" id="numTotal">0</div><div class="lbl">Total checks</div></div>
+    </div>
+
+    <div class="filters" id="filters"></div>
+    <div class="issues" id="issuesList"></div>
+  </div>
+</div>
+<script src="js/main.js"></script>
+
+</body>
+</html>
