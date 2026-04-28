@@ -14,26 +14,38 @@
 </header>
 
 <div class="container">
-  <div class="url-form">
-    <label>Staging URL to audit</label>
-    <div class="url-row">
-      <input type="url" id="urlInput" placeholder="https://corporate.comcast.com/" />
-      <button id="runBtn" onclick="runAudit()">Run audit</button>
+    <h1>StageCheck</h1>
+    
+    <div class="controls">
+        <input type="text" id="urlInput" value="https://corporate.comcast.com/" placeholder="Enter URL...">
+        <button id="runBtn" onclick="initDashboard()">Run audit</button>
     </div>
-    <div class="status" id="status"></div>
-  </div>
+    
+    <p id="status" class="status">Latest Audit: 4/28/2026</p>
 
-  <div id="results">
-    <div class="summary">
-      <div class="summary-card"><div class="num red" id="numErrors">0</div><div class="lbl">Errors</div></div>
-      <div class="summary-card"><div class="num amber" id="numWarnings">0</div><div class="lbl">Warnings</div></div>
-      <div class="summary-card"><div class="num green" id="numPassed">0</div><div class="lbl">Criteria passed</div></div>
-      <div class="summary-card"><div class="num" id="numTotal">0</div><div class="lbl">Total checks</div></div>
+    <div id="results" class="results-area">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span id="numErrors" class="stat-value" style="color: #d70015;">0</span>
+                <span class="stat-label">Errors</span>
+            </div>
+            <div class="stat-card">
+                <span id="numWarnings" class="stat-value" style="color: #f56300;">0</span>
+                <span class="stat-label">Warnings</span>
+            </div>
+            <div class="stat-card">
+                <span id="numPassed" class="stat-value" style="color: #0071e3;">—</span>
+                <span class="stat-label">Status</span>
+            </div>
+            <div class="stat-card">
+                <span id="numTotal" class="stat-value">0</span>
+                <span class="stat-label">Total Checks</span>
+            </div>
+        </div>
+
+        <div id="filters" class="filters"></div>
+        <div id="issuesList"></div>
     </div>
-
-    <div class="filters" id="filters"></div>
-    <div class="issues" id="issuesList"></div>
-  </div>
 </div>
 <script src="js/main.js"></script>
 
