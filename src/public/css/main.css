@@ -361,3 +361,43 @@ header span {
   border-radius: 5px;
   cursor: pointer;
 }
+
+/* Restoring the Control Bar styling */
+.controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #e1e4e8;
+}
+
+#urlInput {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #d2d2d7;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+}
+
+#urlInput:focus {
+    border-color: #0071e3;
+    box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+}
+
+#runBtn {
+    padding: 12px 24px;
+    background: #1d1d1f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#runBtn:hover {
+    background: #000;
+}
