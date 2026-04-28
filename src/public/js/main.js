@@ -7,11 +7,14 @@ let allPageData = [];
 const PI_API_URL = "https://aud-two-strange-cdt.trycloudflare.com/api/audit";
 
 /**
- * Main Initialization: Runs on page load
+ * src/public/js/main.js
+ * Updated initDashboard to display the audit date
  */
+
 async function initDashboard() {
   const status = document.getElementById("status");
   const resultsContainer = document.getElementById("results");
+  const dateEl = document.querySelector("header span"); // Targets the span in your header
 
   try {
     const res = await fetch(`${PI_API_URL}?t=${Date.now()}`);
@@ -20,12 +23,18 @@ async function initDashboard() {
     const data = await res.json();
     allPageData = Array.isArray(data) ? data : [data];
 
+    // Format the date from the first page object
+    if (allPageData[0]?.auditedAt) {
+      const auditDate = new Date(allPageData[0].auditedAt);
+      dateEl.textContent = `Last Audit: ${auditDate.toLocaleString()}`;
+    }
+
     status.textContent = `Global Audit: ${allPageData.length} Pages Scanned`;
     renderPortfolioGrid();
     resultsContainer.style.display = "block";
   } catch (err) {
     status.className = "status error";
-    status.textContent = "Bridge Connection Failed: Check your Cloudflare Tunnel.";
+    status.textContent = "Bridge Connection Failed.";
     console.error(err);
   }
 }
