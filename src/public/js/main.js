@@ -7,20 +7,17 @@ let allPageData = [];
 const PI_API_URL = "https://aud-two-strange-cdt.trycloudflare.com/api/audit";
 
 /**
- * Main Initialization: Runs on page load to fetch the latest stored data
+ * Main Initialization: Runs on page load
  */
 async function initDashboard() {
   const status = document.getElementById("status");
   const resultsContainer = document.getElementById("results");
 
   try {
-    // Cache busting prevents the 304 "Not Modified" loop
     const res = await fetch(`${PI_API_URL}?t=${Date.now()}`);
     if (!res.ok) throw new Error("Pi API is offline");
     
     const data = await res.json();
-    
-    // Ensure data is treated as an array of page objects
     allPageData = Array.isArray(data) ? data : [data];
 
     status.textContent = `Global Audit: ${allPageData.length} Pages Scanned`;
@@ -37,17 +34,12 @@ async function initDashboard() {
  * Triggered by the "Run Audit" button
  */
 async function triggerManualAudit() {
-  const url = document.getElementById("urlInput").value;
-  const status = document.getElementById("status");
   const runBtn = document.getElementById("runBtn");
+  const status = document.getElementById("status");
 
-  // UI Feedback
   runBtn.disabled = true;
   runBtn.textContent = "Processing...";
-  status.textContent = `Refreshing audit data for ${url}...`;
-
-  // Currently, the Pi serves the 'last_audit.json'. 
-  // This call refreshes the UI with the most recent scan available.
+  
   await initDashboard();
 
   runBtn.disabled = false;
@@ -61,25 +53,31 @@ function renderPortfolioGrid() {
   const listEl = document.getElementById("issuesList");
   const filtersEl = document.getElementById("filters");
   
-  // Aggregate Global Stats for the top cards
+  // Aggregate Global Stats
   const totalErrors = allPageData.reduce((acc, p) => acc + (p.summary?.errors || 0), 0);
   const totalWarnings = allPageData.reduce((acc, p) => acc + (p.summary?.warnings || 0), 0);
 
+  // Update Header using the restored theme classes
+  document.getElementById("numErrors").className = "num red";
   document.getElementById("numErrors").textContent = totalErrors;
+  
+  document.getElementById("numWarnings").className = "num amber";
   document.getElementById("numWarnings").textContent = totalWarnings;
+  
+  document.getElementById("numTotal").className = "num";
   document.getElementById("numTotal").textContent = allPageData.length;
-  document.getElementById("numPassed").textContent = "GLOBAL";
+  
+  document.getElementById("numPassed").className = "num blue";
+  document.getElementById("numPassed").textContent = "ALL";
 
-  filtersEl.innerHTML = ""; // Filters hidden in Portfolio View
+  filtersEl.innerHTML = ""; 
   listEl.className = "page-grid"; 
 
   listEl.innerHTML = allPageData.map((page, index) => {
     const urlObj = new URL(page.url);
-    
-    // UI URL Shortening: Show path or Home
     let displayPath = urlObj.pathname === "/" ? "Home" : urlObj.pathname;
     
-    // If path is too long, show the last segment and clean hyphens
+    // Shorten path for card display
     if (displayPath.length > 30) {
         displayPath = "..." + displayPath.split('/').filter(Boolean).pop().replace(/-/g, ' ');
     }
@@ -107,16 +105,16 @@ function viewPageReport(index) {
   const page = allPageData[index];
   const listEl = document.getElementById("issuesList");
   
-  // Update Top Stats for this specific page context
+  // Update Header for specific page context
   document.getElementById("numErrors").textContent = page.summary?.errors || 0;
   document.getElementById("numWarnings").textContent = page.summary?.warnings || 0;
   document.getElementById("numTotal").textContent = page.summary?.total || 0;
-  document.getElementById("numPassed").textContent = "DETAIL";
+  document.getElementById("numPassed").textContent = "PAGE";
 
-  listEl.className = "issues-list";
+  listEl.className = "issues"; // Use the original 'issues' flex container
   listEl.innerHTML = `
     <button onclick="renderPortfolioGrid()" class="back-btn">← Back to Global Grid</button>
-    <h3 style="margin-bottom: 20px;">Report for: ${page.url}</h3>
+    <h3 style="font-size: 14px; margin-bottom: 12px; color: #666;">Report for: ${page.url}</h3>
     ${page.issues.length > 0 ? page.issues.map(issue => `
       <div class="issue ${issue.type}">
         <div class="issue-top">
@@ -126,9 +124,8 @@ function viewPageReport(index) {
         ${issue.detail ? `<div class="issue-detail">${issue.detail}</div>` : ""}
         ${issue.help ? `<div class="issue-help"><a href="${issue.help}" target="_blank">View Remediation Guide</a></div>` : ""}
       </div>
-    `).join("") : '<div class="stat-card">No issues found on this page.</div>'}
+    `).join("") : '<div class="empty">No issues found on this page.</div>'}
   `;
 }
 
-// Initial fetch when DOM is ready
 window.addEventListener('DOMContentLoaded', initDashboard);
