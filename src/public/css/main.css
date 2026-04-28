@@ -4,7 +4,6 @@
 
 * {
   box-sizing: border-box;
-  margin: 0;
   padding: 0;
 }
 
@@ -27,7 +26,6 @@ header {
 header h1 {
   font-size: 16px;
   font-weight: 600;
-  margin-bottom: 1rem;
 }
 
 header span {
