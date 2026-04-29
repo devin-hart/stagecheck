@@ -7,8 +7,8 @@ let allPageData = [];
 let currentPageIndex = null;
 let currentDevice = "desktop";
 
-const PI_API_URL = "https://rpi4.tailbfccfb.ts.net/api/audit";
-const BRIDGE_BASE_URL = new URL(PI_API_URL).origin;
+const PI_API_URL = "https://www.devinh.art/api/pi-audit";
+const BRIDGE_SCREENSHOT_BASE = "https://www.devinh.art/api/pi-screenshot"; 
 const AUDIT_API_KEY = "stagecheck_9f3b2a7c8d";
 const LOCAL_STREAM_URL = "/api/manual-audit-stream"; // Keep manual local
 
@@ -43,9 +43,6 @@ function initElements() {
   elements.numErrors = document.getElementById("numErrors");
   elements.numWarnings = document.getElementById("numWarnings");
   elements.numTotal = document.getElementById("numTotal");
-  elements.numTotalLabel = document.querySelector(
-    ".stat-card:nth-child(3) .stat-label",
-  );
   elements.urlInput = document.getElementById("urlInput");
   elements.themeToggle = document.getElementById("themeToggle");
   elements.siteHealth = document.getElementById("siteHealth");
@@ -215,7 +212,6 @@ function renderPortfolioGrid() {
   elements.numErrors.textContent = totals.errors;
   elements.numWarnings.textContent = totals.warnings;
   elements.numTotal.textContent = allPageData.length;
-  elements.numTotalLabel.textContent = "Pages Scanned";
 
   calculateSiteHealth();
 
@@ -248,7 +244,7 @@ function renderPortfolioGrid() {
         heroScreenshot && heroScreenshot.startsWith("data:")
           ? heroScreenshot
           : heroScreenshot
-            ? `${BRIDGE_BASE_URL}${heroScreenshot}`
+            ? `${BRIDGE_SCREENSHOT_BASE}/${heroScreenshot.split("/").pop()}`
             : "";
 
       const totalCount = totalErrors + totalWarnings;
@@ -318,7 +314,7 @@ function viewPageReport(index, device = null) {
     report.screenshot && report.screenshot.startsWith("data:")
       ? report.screenshot
       : report.screenshot
-        ? `${BRIDGE_BASE_URL}${report.screenshot}`
+        ? `${BRIDGE_SCREENSHOT_BASE}/${report.screenshot.split("/").pop()}`
         : "";
 
   elements.issuesList.className = "";
