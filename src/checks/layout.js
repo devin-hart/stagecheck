@@ -1,23 +1,22 @@
+/**
+ * src/checks/layout.js
+ */
 export function runLayoutChecks(snapshot) {
   const issues = [];
-  const { bodyScrollWidth, viewportWidth, overflowingElements } = snapshot;
 
-  if (bodyScrollWidth > viewportWidth) {
-    issues.push({
-      type: "error",
-      category: "layout",
-      title: "Horizontal overflow detected on body",
-      detail: `scrollWidth: ${bodyScrollWidth}px, viewport: ${viewportWidth}px`,
-    });
-  }
-
-  for (const el of overflowingElements) {
-    issues.push({
-      type: "error",
-      category: "layout",
-      title: `Element overflows container`,
-      selector: el.selector,
-      detail: `scrollWidth: ${el.scrollWidth}px`,
+  if (snapshot.overflowingElements && snapshot.overflowingElements.length > 0) {
+    snapshot.overflowingElements.forEach((el) => {
+      if (!el.isHidden) {
+        issues.push({
+          type: "error",
+          category: "layout",
+          rule: "horizontal-overflow",
+          title: "Horizontal Overflow Detected",
+          detail: `Element ${el.selector} is ${el.scrollWidth}px wide, which exceeds the viewport width of ${snapshot.viewportWidth}px.`,
+          selector: el.selector,
+          html: el.html
+        });
+      }
     });
   }
 

@@ -54,6 +54,7 @@ export function runSeoChecks(snapshot) {
       type: "warning",
       category: "seo",
       title: `Multiple H1 tags found (${h1s.length})`,
+      elements: h1s.map((h) => ({ selector: "h1", html: h.html })),
     });
 
   // Heading hierarchy
@@ -64,6 +65,7 @@ export function runSeoChecks(snapshot) {
         type: "warning",
         category: "seo",
         title: `Heading hierarchy skips h${prevLevel} → h${h.level}`,
+        elements: [{ selector: `h${h.level}`, html: h.html }],
         detail: `"${h.text}"`,
       });
     }

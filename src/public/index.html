@@ -3,51 +3,93 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StageCheck</title>
+  <title>StageCheck — Site Audit Dashboard</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <meta name="description" content="StageCheck monitors your staging pages for accessibility, SEO, layout, and LLM-readiness issues.">
   <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/status.css">
+  <script>
+    (function() {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark-mode');
+        document.addEventListener('DOMContentLoaded', () => {
+          document.body.classList.add('dark-mode');
+        });
+      }
+    })();
+  </script>
 </head>
 <body>
 
 <header>
-  <h1>StageCheck</h1>
-  <span>Staging page auditor</span>
+  <button class="header-brand" onclick="renderPortfolioGrid()" aria-label="Return to Dashboard Overview">
+    <div class="brand-icon" aria-hidden="true">SC</div>
+    <h1>StageCheck</h1>
+    <span class="header-subtitle">Staging Audit Dashboard</span>
+  </button>
+  <div class="theme-switch-wrapper">
+    <span class="theme-label">Light/Dark</span>
+    <label class="theme-switch" for="themeToggle">
+      <input type="checkbox" id="themeToggle" aria-label="Toggle dark mode">
+      <span class="slider round"></span>
+    </label>
+  </div>
 </header>
 
-<div class="container">
-    <h1>StageCheck</h1>
-    
-<div class="controls">
-    <input type="text" id="urlInput" value="https://corporate.comcast.com/" placeholder="Enter URL to audit...">
-    <button id="runBtn" onclick="triggerManualAudit()">Run audit</button>
-</div>
-    
-    <p id="status" class="status">Latest Audit: 4/28/2026</p>
-
-    <div id="results" class="results-area">
-<div class="stats-grid">
-    <div class="stat-card">
-        <span id="numErrors" class="stat-value">4</span>
-        <span class="stat-label">Errors</span>
+<main class="container">
+  <div class="controls">
+    <div class="input-wrapper">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <div class="input-group">
+        <input type="url" id="urlInput" placeholder="Enter URL to audit staging..." aria-label="Staging URL">
+        <button id="runBtn" onclick="triggerManualAudit()">Run Audit</button>
+      </div>
     </div>
-    <div class="stat-card">
+  </div>
+
+  <div id="results" class="results-area">
+    <section class="stats-grid" aria-label="Audit statistics">
+      <div class="stat-card health-card">
+        <div class="stat-value" id="siteHealth">—</div>
+        <div class="stat-label">Global Health Score</div>
+        <div class="health-bar-bg"><div id="healthBar" class="health-bar-fill"></div></div>
+      </div>
+      <div class="stat-card">
+        <span id="numErrors" class="stat-value">0</span>
+        <span class="stat-label">Errors</span>
+      </div>
+      <div class="stat-card">
         <span id="numWarnings" class="stat-value">0</span>
         <span class="stat-label">Warnings</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="numTotal">—</div>
+        <div class="stat-label">Pages Scanned</div>
+      </div>
+    </section>
+
+    <div class="results-actions">
+      <button id="exportPdfBtn" class="btn-secondary" style="display: none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+        </svg>
+        Export PDF Report
+      </button>
     </div>
-    <div class="stat-card">
-        <span id="numPassed" class="stat-value" style="color: #0071e3;">PASSED</span>
-        <span class="stat-label">Status</span>
-    </div>
-    <div class="stat-card">
-        <span id="numTotal" class="stat-value">4</span>
-        <span class="stat-label">Total Checks</span>
-    </div>
+
+    <nav id="filters" class="filters" aria-label="Issue filters"></nav>
+    <div id="issuesList" aria-live="polite"></div>
+  </div>
+</main>
+
+<!-- Audit Status Notification -->
+<div id="audit-status" class="audit-status-hidden">
+  <div class="status-spinner"></div>
+  <span id="status-text">Starting audit...</span>
 </div>
 
-        <div id="filters" class="filters"></div>
-        <div id="issuesList"></div>
-    </div>
-</div>
 <script src="js/main.js"></script>
-
 </body>
 </html>

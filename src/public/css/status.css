@@ -1,0 +1,38 @@
+/* --- Audit Status Notification --- */
+#audit-status {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  padding: 12px 24px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 10000;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-weight: 500;
+  color: var(--text);
+  backdrop-filter: blur(10px);
+}
+
+.audit-status-hidden {
+  bottom: -100px !important;
+  opacity: 0;
+}
+
+.status-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin-status 0.8s linear infinite;
+}
+
+@keyframes spin-status {
+  to { transform: rotate(360deg); }
+}
