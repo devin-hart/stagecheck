@@ -7,7 +7,7 @@ let allPageData = [];
 let currentPageIndex = null;
 let currentDevice = "desktop";
 
-const PI_API_URL = "https://organisms-deleted-construct-with.trycloudflare.com/api/audit";
+const PI_API_URL = "https://rpi4.tailbfccfb.ts.net/api/audit";
 const BRIDGE_BASE_URL = new URL(PI_API_URL).origin;
 const AUDIT_API_KEY = "stagecheck_9f3b2a7c8d";
 const LOCAL_STREAM_URL = "/api/manual-audit-stream"; // Keep manual local
@@ -43,7 +43,9 @@ function initElements() {
   elements.numErrors = document.getElementById("numErrors");
   elements.numWarnings = document.getElementById("numWarnings");
   elements.numTotal = document.getElementById("numTotal");
-  elements.numTotalLabel = document.querySelector(".stat-card:nth-child(3) .stat-label");
+  elements.numTotalLabel = document.querySelector(
+    ".stat-card:nth-child(3) .stat-label",
+  );
   elements.urlInput = document.getElementById("urlInput");
   elements.themeToggle = document.getElementById("themeToggle");
   elements.siteHealth = document.getElementById("siteHealth");
@@ -66,7 +68,9 @@ function initElements() {
   });
 
   // Local Mode Safety Switch
-  const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  const isLocal =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1";
   const controls = document.querySelector(".controls");
   if (!isLocal && controls) {
     controls.style.display = "none";
@@ -87,7 +91,7 @@ async function initDashboard() {
 
   try {
     const res = await fetch(`${PI_API_URL}?t=${Date.now()}`, {
-      headers: { "x-api-key": AUDIT_API_KEY }
+      headers: { "x-api-key": AUDIT_API_KEY },
     });
     if (!res.ok) throw new Error("Audit API is offline");
 
@@ -130,11 +134,11 @@ async function triggerManualAudit() {
 
   elements.runBtn.disabled = true;
   elements.runBtn.textContent = "Working…";
-  
+
   try {
     renderSkeletons(1);
     showStatus("Initializing browser...");
-    
+
     // Use the local streaming endpoint
     const streamUrl = `${LOCAL_STREAM_URL}?url=${encodeURIComponent(url)}&key=${AUDIT_API_KEY}`;
     const response = await fetch(streamUrl);
@@ -197,7 +201,7 @@ function renderPortfolioGrid() {
 
   const totals = allPageData.reduce(
     (acc, page) => {
-      Object.values(page.devices).forEach(report => {
+      Object.values(page.devices).forEach((report) => {
         if (report.summary) {
           acc.errors += report.summary.errors || 0;
           acc.warnings += report.summary.warnings || 0;
@@ -223,12 +227,13 @@ function renderPortfolioGrid() {
       const urlObj = new URL(page.url);
       let displayPath = urlObj.pathname === "/" ? "Home" : urlObj.pathname;
       if (displayPath.length > 30) {
-        displayPath = "…" + displayPath.split("/").filter(Boolean).pop().replace(/-/g, " ");
+        displayPath =
+          "…" + displayPath.split("/").filter(Boolean).pop().replace(/-/g, " ");
       }
 
       let totalErrors = 0;
       let totalWarnings = 0;
-      Object.values(page.devices).forEach(d => {
+      Object.values(page.devices).forEach((d) => {
         totalErrors += d.summary?.errors || 0;
         totalWarnings += d.summary?.warnings || 0;
       });
@@ -237,12 +242,15 @@ function renderPortfolioGrid() {
       const repKey = page.devices.desktop ? "desktop" : deviceKeys[0];
       const representative = page.devices[repKey] || {};
       const heroScreenshot = representative.screenshot;
-      
+
       // Smart path: handle both Base64 and File paths
-      const screenshotUrl = heroScreenshot && heroScreenshot.startsWith("data:") 
-        ? heroScreenshot 
-        : (heroScreenshot ? `${BRIDGE_BASE_URL}${heroScreenshot}` : "");
-      
+      const screenshotUrl =
+        heroScreenshot && heroScreenshot.startsWith("data:")
+          ? heroScreenshot
+          : heroScreenshot
+            ? `${BRIDGE_BASE_URL}${heroScreenshot}`
+            : "";
+
       const totalCount = totalErrors + totalWarnings;
       const deviceCount = deviceKeys.length;
       const deviceLabel = deviceCount === 1 ? repKey : "Multi-device";
@@ -276,12 +284,13 @@ function renderPortfolioGrid() {
 function viewPageReport(index, device = null) {
   currentPageIndex = index;
   const page = allPageData[index];
-  
+
   if (!device) {
     device = page.devices.desktop ? "desktop" : Object.keys(page.devices)[0];
   }
   currentDevice = device;
-  if (elements.exportPdfBtn) elements.exportPdfBtn.style.display = "inline-flex";
+  if (elements.exportPdfBtn)
+    elements.exportPdfBtn.style.display = "inline-flex";
   const report = page.devices[device] || {};
   const issues = report.issues || [];
 
@@ -292,17 +301,25 @@ function viewPageReport(index, device = null) {
 
   elements.filters.innerHTML = "";
 
-  const categories = [...new Set(issues.map((i) => i.category).filter(Boolean))];
-  const filtersHtml = categories.length > 0 ? `
+  const categories = [
+    ...new Set(issues.map((i) => i.category).filter(Boolean)),
+  ];
+  const filtersHtml =
+    categories.length > 0
+      ? `
     <nav class="filters" aria-label="Filter issues by category">
       <button class="filter-btn active" data-filter="all" aria-pressed="true">All</button>
-      ${categories.map(cat => `<button class="filter-btn" data-filter="${cat}">${formatCategory(cat)}</button>`).join("")}
-    </nav>` : "";
+      ${categories.map((cat) => `<button class="filter-btn" data-filter="${cat}">${formatCategory(cat)}</button>`).join("")}
+    </nav>`
+      : "";
 
   // Smart path: handle both Base64 and File paths for screenshot
-  const screenshotUrl = report.screenshot && report.screenshot.startsWith("data:") 
-    ? report.screenshot 
-    : (report.screenshot ? `${BRIDGE_BASE_URL}${report.screenshot}` : "");
+  const screenshotUrl =
+    report.screenshot && report.screenshot.startsWith("data:")
+      ? report.screenshot
+      : report.screenshot
+        ? `${BRIDGE_BASE_URL}${report.screenshot}`
+        : "";
 
   elements.issuesList.className = "";
   elements.issuesList.innerHTML = `
@@ -314,9 +331,9 @@ function viewPageReport(index, device = null) {
       <div class="report-title-row">
         <p class="report-url">Results for <code>${escapeHtml(page.url)}</code></p>
         <div class="device-tabs">
-          <button class="device-tab ${device === 'desktop' ? 'active' : ''}" onclick="viewPageReport(${index}, 'desktop')">Desktop</button>
-          <button class="device-tab ${device === 'tablet' ? 'active' : ''}" onclick="viewPageReport(${index}, 'tablet')">Tablet</button>
-          <button class="device-tab ${device === 'mobile' ? 'active' : ''}" onclick="viewPageReport(${index}, 'mobile')">Mobile</button>
+          <button class="device-tab ${device === "desktop" ? "active" : ""}" onclick="viewPageReport(${index}, 'desktop')">Desktop</button>
+          <button class="device-tab ${device === "tablet" ? "active" : ""}" onclick="viewPageReport(${index}, 'tablet')">Tablet</button>
+          <button class="device-tab ${device === "mobile" ? "active" : ""}" onclick="viewPageReport(${index}, 'mobile')">Mobile</button>
         </div>
       </div>
       ${report.screenshot ? `<div class="report-screenshot"><img src="${screenshotUrl}" alt="Page Snapshot"></div>` : ""}
@@ -331,7 +348,9 @@ function viewPageReport(index, device = null) {
     filtersEl.addEventListener("click", (e) => {
       const btn = e.target.closest(".filter-btn");
       if (!btn) return;
-      filtersEl.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      filtersEl
+        .querySelectorAll(".filter-btn")
+        .forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
       renderIssueList(issues, btn.dataset.filter);
     });
@@ -340,7 +359,8 @@ function viewPageReport(index, device = null) {
 }
 
 function renderIssueList(issues, filter = "all") {
-  const filtered = filter === "all" ? issues : issues.filter((i) => i.category === filter);
+  const filtered =
+    filter === "all" ? issues : issues.filter((i) => i.category === filter);
   const container = document.getElementById("issueListBody");
   if (!container) return;
 
@@ -349,7 +369,9 @@ function renderIssueList(issues, filter = "all") {
     return;
   }
 
-  container.innerHTML = `<ol class="issues">${filtered.map(issue => `
+  container.innerHTML = `<ol class="issues">${filtered
+    .map(
+      (issue) => `
     <li>
       <article class="issue ${issue.type}">
         <div class="issue-top">
@@ -360,18 +382,22 @@ function renderIssueList(issues, filter = "all") {
         ${renderElements(issue)}
         ${issue.help ? `<div class="issue-help"><a href="${issue.help}" target="_blank">View Guide</a></div>` : ""}
       </article>
-    </li>`).join("")}</ol>`;
+    </li>`,
+    )
+    .join("")}</ol>`;
 }
 
 function renderElements(issue) {
   const elems = issue.elements || (issue.selector ? [issue.selector] : null);
   if (!elems || !Array.isArray(elems) || elems.length === 0) return "";
-  return `<div class="issue-elements">${elems.map(el => {
-    const selector = typeof el === "string" ? el : el.selector;
-    const htmlSnippet = typeof el === "object" ? el.html : null;
-    return `<div class="issue-element"><div class="el-selector"><code>${escapeHtml(selector)}</code></div>
+  return `<div class="issue-elements">${elems
+    .map((el) => {
+      const selector = typeof el === "string" ? el : el.selector;
+      const htmlSnippet = typeof el === "object" ? el.html : null;
+      return `<div class="issue-element"><div class="el-selector"><code>${escapeHtml(selector)}</code></div>
     ${htmlSnippet ? `<pre class="el-snippet"><code>${escapeHtml(htmlSnippet)}</code></pre>` : ""}</div>`;
-  }).join("")}</div>`;
+    })
+    .join("")}</div>`;
 }
 
 // ─── Theme & Helpers ───────────────────────────────────────────────────────────
@@ -396,16 +422,16 @@ function renderPerfPanel(page) {
 function calculateSiteHealth() {
   if (allPageData.length === 0) return;
   let totalScore = 0;
-  allPageData.forEach(page => {
+  allPageData.forEach((page) => {
     let pageScore = 100;
     let pageErrors = 0;
     let pageWarnings = 0;
-    
-    Object.values(page.devices).forEach(deviceReport => {
+
+    Object.values(page.devices).forEach((deviceReport) => {
       pageErrors += deviceReport.summary?.errors || 0;
       pageWarnings += deviceReport.summary?.warnings || 0;
     });
-    
+
     pageScore -= pageErrors * 5;
     pageScore -= pageWarnings * 2;
     totalScore += Math.max(0, pageScore);
@@ -415,28 +441,48 @@ function calculateSiteHealth() {
   if (elements.healthBar) elements.healthBar.style.width = `${avgScore}%`;
 }
 
-function formatCategory(cat) { return cat ? cat.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) : ""; }
-function escapeHtml(str) { return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;") : ""; }
+function formatCategory(cat) {
+  return cat
+    ? cat.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    : "";
+}
+function escapeHtml(str) {
+  return str
+    ? str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+    : "";
+}
 
 function initLazyLoading() {
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       if (entry.isIntersecting) {
         const el = entry.target;
         const src = el.getAttribute("data-src");
-        if (src) { el.style.backgroundImage = `url('${src}')`; el.classList.add("loaded"); }
+        if (src) {
+          el.style.backgroundImage = `url('${src}')`;
+          el.classList.add("loaded");
+        }
         observer.unobserve(el);
       }
     });
   });
-  document.querySelectorAll(".lazy-bg").forEach(el => observer.observe(el));
+  document.querySelectorAll(".lazy-bg").forEach((el) => observer.observe(el));
 }
 
 function renderSkeletons(count = 8) {
   elements.issuesList.className = "page-grid";
-  elements.issuesList.innerHTML = Array(count).fill(0).map(() => `
+  elements.issuesList.innerHTML = Array(count)
+    .fill(0)
+    .map(
+      () => `
     <div class="skeleton-card"><div class="skeleton skeleton-hero"></div>
-    <div class="page-card-body"><div class="skeleton-scores"><div class="skeleton skeleton-score"></div></div></div></div>`).join("");
+    <div class="page-card-body"><div class="skeleton-scores"><div class="skeleton skeleton-score"></div></div></div></div>`,
+    )
+    .join("");
 }
 
 window.triggerManualAudit = triggerManualAudit;
