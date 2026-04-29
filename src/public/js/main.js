@@ -229,16 +229,18 @@ function renderPortfolioGrid() {
 
       let totalErrors = 0;
       let totalWarnings = 0;
-      Object.values(page.devices).forEach((d) => {
-        totalErrors += d.summary?.errors || 0;
-        totalWarnings += d.summary?.warnings || 0;
-      });
+      if (page.devices) {
+        Object.values(page.devices).forEach((d) => {
+          totalErrors += d.summary?.errors || 0;
+          totalWarnings += d.summary?.warnings || 0;
+        });
+      }
 
-      const deviceKeys = Object.keys(page.devices);
-      const repKey = page.devices.desktop ? "desktop" : deviceKeys[0];
-      const representative = page.devices[repKey] || {};
+      const deviceKeys = page.devices ? Object.keys(page.devices) : [];
+      const repKey = (page.devices && page.devices.desktop) ? "desktop" : deviceKeys[0];
+      const representative = page.devices ? (page.devices[repKey] || {}) : {};
       const heroScreenshot = representative.screenshot;
-
+      
       // Smart path: handle both Base64 and File paths
       const screenshotUrl =
         heroScreenshot && heroScreenshot.startsWith("data:")
@@ -249,7 +251,7 @@ function renderPortfolioGrid() {
 
       const totalCount = totalErrors + totalWarnings;
       const deviceCount = deviceKeys.length;
-      const deviceLabel = deviceCount === 1 ? repKey : "Multi-device";
+      const deviceLabel = deviceCount === 1 ? repKey : (deviceCount > 1 ? "Multi-device" : "No Data");
       const loadTime = representative.loadTime || "";
 
       return `
@@ -278,22 +280,33 @@ function renderPortfolioGrid() {
 // ─── TIER 2: Issue Report ─────────────────────────────────────────────────────
 
 function viewPageReport(index, device = null) {
-  currentPageIndex = index;
   const page = allPageData[index];
-
-  if (!device) {
-    device = page.devices.desktop ? "desktop" : Object.keys(page.devices)[0];
+  if (!page) {
+    console.error("View Report Error: Page data not found for index", index);
+    return;
   }
+  
+  currentPageIndex = index;
+  
+  if (!device) {
+    device = (page.devices && page.devices.desktop) ? "desktop" : Object.keys(page.devices || {})[0];
+  }
+  
+  if (!device) {
+    console.error("View Report Error: No device data found for page", page.url);
+    return;
+  }
+
   currentDevice = device;
   if (elements.exportPdfBtn)
     elements.exportPdfBtn.style.display = "inline-flex";
   const report = page.devices[device] || {};
   const issues = report.issues || [];
 
-  elements.numErrors.textContent = report.summary?.errors || 0;
-  elements.numWarnings.textContent = report.summary?.warnings || 0;
-  elements.numTotal.textContent = report.summary?.total || 0;
-  elements.numTotalLabel.textContent = "Device Issues";
+  if (elements.numErrors) elements.numErrors.textContent = report.summary?.errors || 0;
+  if (elements.numWarnings) elements.numWarnings.textContent = report.summary?.warnings || 0;
+  if (elements.numTotal) elements.numTotal.textContent = report.summary?.total || 0;
+  if (elements.numTotalLabel) elements.numTotalLabel.textContent = "Device Issues";
 
   elements.filters.innerHTML = "";
 
