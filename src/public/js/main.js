@@ -64,6 +64,13 @@ function initElements() {
       viewPageReport(parseInt(card.dataset.index, 10));
     }
   });
+
+  // Local Mode Safety Switch
+  const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  const controls = document.querySelector(".controls");
+  if (!isLocal && controls) {
+    controls.style.display = "none";
+  }
 }
 
 // ─── Dashboard Init ───────────────────────────────────────────────────────────
